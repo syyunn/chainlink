@@ -1,13 +1,16 @@
-import React, { useEffect, useState } from 'react'
 import { RouteComponentProps } from '@reach/router'
+import React, { useEffect } from 'react'
+import { connect, MapDispatchToProps, MapStateToProps } from 'react-redux'
+import { fetchAdminHeads } from '../../../actions/adminHeads'
+import { AppState } from '../../../reducers'
+import { DispatchBinding } from '../../../utils/types'
 
 interface OwnProps {
   rowsPerPage?: number
 }
 
 interface StateProps {
-  adminHeads?: EthereumHead[]
-  count: AppState['adminHeadIndex']['count']
+  adminHeads?: AppState['adminHeads']['heads']
 }
 
 interface DispatchProps {
@@ -15,28 +18,36 @@ interface DispatchProps {
 }
 
 interface Props
-  extends WithStyles<typeof styles>,
-    RouteComponentProps,
+  extends RouteComponentProps,
     StateProps,
     DispatchProps,
     OwnProps {}
 
-export const Index: React.FC<Props> = ({
-  adminHeads,
-  fetchAdminHeads,
-  count,
-  rowsPerPage = 10,
-}) => {
-  const [currentPage, setCurrentPage] = useState(1)
-  const onChangePage = (_event: ChangePageEvent, page: number) => {
-    setCurrentPage(page)
-  }
-
+export const Index: React.FC<Props> = ({ adminHeads, fetchAdminHeads }) => {
   useEffect(() => {
-    fetchAdminHeads(currentPage, rowsPerPage)
-  }, [rowsPerPage, currentPage, fetchAdminHeads])
+    fetchAdminHeads()
+  }, [fetchAdminHeads])
 
-  return <div>hello</div>
+  return <div>{JSON.stringify(adminHeads, null, 1)}</div>
 }
 
-export default Index
+const mapStateToProps: MapStateToProps<
+  StateProps,
+  OwnProps,
+  AppState
+> = state => {
+  return {
+    adminHeads: state.adminHeads.heads,
+  }
+}
+
+const mapDispatchToProps: MapDispatchToProps<DispatchProps, OwnProps> = {
+  fetchAdminHeads,
+}
+
+export const ConnectedIndex = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(Index)
+
+export default ConnectedIndex

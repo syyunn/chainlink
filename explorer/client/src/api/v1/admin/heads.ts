@@ -17,9 +17,8 @@ const index = jsonapi.fetchResource<IndexRequestParams, models.Head[]>(
  * @param page The page number to fetch
  * @param size The maximum number of operators in the page
  */
-export function getHeads(
-  page: number,
-  size: number,
-): Promise<jsonapi.PaginatedApiResponse<models.Head[]>> {
-  return index({ page, size })
+export function getHeads(): Promise<
+  jsonapi.PaginatedApiResponse<models.Head[]>
+> {
+  return index()
 }
